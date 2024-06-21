@@ -43,13 +43,28 @@ generate_pareto_fronts = True
 protected_attr_in_title = True
 
 # FAIRNESS METRIC (0 to 5):
+# 0 = "Statistical parity difference"
+# 1 = "Disparate impact"
+# 2 = "Average odds difference"
+# 3 = "Equalized odds difference"
+# 4 = "Equal opportunity difference"
+# 5 = "Theil index"
 fairness_metric_index = 0
 
 # ACCURACY METRIC (0 to 7):
-accuracy_metric_index = 5
+# NOTE: "True positive rate" and "Recall" are the same!
+# 0 = "True positive rate"
+# 1 = "False positive rate"
+# 2 = "True negative rate"
+# 3 = "False negative rate"
+# 4 = "Accuracy"
+# 5 = "Balanced accuracy"
+# 6 = "Precision"
+# 7 = "Recall"
+accuracy_metric_index = 4
 
 # FAIRNESS WEIGHT (default = 1.0)
-lambda_weight = 0.3
+lambda_weight = 1.0
 
 # ************************************************ END CUSTOMIZATION ************************************************
 

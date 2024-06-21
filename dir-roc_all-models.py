@@ -38,7 +38,7 @@ roc_metric_index = 0
 # 3 = "Decision Tree"
 # 4 = "Random Forest"
 # 5 = "Neural Network"
-selected_model_index = 4
+selected_model_index = 0
 
 # FOR KNN, NUMBER OF NEIGHBORS
 knn_neighbor_ct = 7
