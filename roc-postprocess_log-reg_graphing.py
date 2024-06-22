@@ -17,7 +17,7 @@ from aif360.metrics import BinaryLabelDatasetMetric, ClassificationMetric
 dataset_file_name = "adult.data_cleaned"
 
 # WHETHER TO SHOW GRAPHS UPON COMPLETION
-show_all_graphs = False
+show_graphs = False
 
 # WHETHER TO PRINT GRAPH TITLES
 print_titles = True
@@ -370,7 +370,7 @@ def generate_graphs_and_txt(protected_attribute, filename, fairness_graph_data_p
     plt.suptitle(f"Protected attribute: {protected_attribute}")
     plt.tight_layout()
     plt.savefig(f"generated-pics/{filename}.png")
-    if show_all_graphs:
+    if show_graphs:
         plt.show()
 
     print("Graphs generated successfully")
