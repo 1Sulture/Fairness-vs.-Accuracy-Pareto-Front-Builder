@@ -2,7 +2,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import csv
 
-from matplotlib.ticker import MaxNLocator
+from matplotlib.ticker import MaxNLocator, FormatStrFormatter
 
 # ************************************************ START CUSTOMIZATION ************************************************
 
@@ -13,7 +13,7 @@ dataset_file_name = ""
 
 # PROTECTED ATTRIBUTE TO EXAMINE (only for labeling, not functionality)
 #  ("race" or "sex")
-selected_protected_attr = "sex"
+selected_protected_attr = ""
 
 # WHETHER TO SHOW GRAPHS UPON GENERATION
 show_new_graphs = True
@@ -26,6 +26,9 @@ generate_metric_graphs = False
 # WHETHER TO GENERATE TITLE
 generate_metric_graph_titles = True
 generate_metric_graph_super_title = True
+
+# WHETHER TO DISPLAY Y-AXIS LABEL
+generate_metric_graph_y_label = False
 
 # FAIRNESS METRICS TO SHOW:
 selected_fair_metric_names = ["Statistical parity difference", "Disparate impact", "Average odds difference",
@@ -40,27 +43,12 @@ selected_acc_metric_names = ["True positive rate", "False positive rate", "True 
 generate_pareto_fronts = True
 
 # WHETHER TO MENTION PROTECTED ATTRIBUTE IN TITLE
-protected_attr_in_title = True
+protected_attr_in_title = False
 
 # FAIRNESS METRIC (0 to 5):
-# 0 = "Statistical parity difference"
-# 1 = "Disparate impact"
-# 2 = "Average odds difference"
-# 3 = "Equalized odds difference"
-# 4 = "Equal opportunity difference"
-# 5 = "Theil index"
 fairness_metric_index = 0
 
 # ACCURACY METRIC (0 to 7):
-# NOTE: "True positive rate" and "Recall" are the same!
-# 0 = "True positive rate"
-# 1 = "False positive rate"
-# 2 = "True negative rate"
-# 3 = "False negative rate"
-# 4 = "Accuracy"
-# 5 = "Balanced accuracy"
-# 6 = "Precision"
-# 7 = "Recall"
 accuracy_metric_index = 4
 
 # FAIRNESS WEIGHT (default = 1.0)
@@ -132,31 +120,33 @@ def read_metrics_from_csv(file_name):
     return metric_dict_from_csv
 
 
-def plot_selected_metric_data(metric_dict_master, csv_file_name, metric_type_str, selected_metric_names):
+def plot_selected_metric_data(metric_dict_master, file_name, metric_type_str, selected_metric_names):
     """
     Plots given metric data and saves to a PNG file with specified file name.
     :param metric_dict_master: the master dict with all metric data
-    :param csv_file_name: name of original CSV data file
+    :param file_name: name for graph file
     :param metric_type_str: metric type: "Fairness metrics" or "Accuracy metrics"
     :param selected_metric_names: list of metric names to plot
     """
     # Initial graph set up
     x_values = np.linspace(0, 1, 11)  # DI repair levels from 0 to 1 in steps of 0.1
-    x_label = "DIR - Repair Level"
+    x_label = "DIR Repair Level"
 
     best_fit_line_color = '#ff9999'
 
     # Set variables depending on metric type
     if metric_type_str == "Fairness metrics":
-        metric_type_str = "fairness"
+        metric_file_name_str = "fairness"
         point_rounding_lvl = 2
     else:
-        metric_type_str = "accuracy"
+        metric_file_name_str = "accuracy"
         point_rounding_lvl = 3
 
     # Prepare subplot grid
     metric_ct = len(selected_metric_names)
-    fig, axes = plt.subplots(2, metric_ct, figsize=(4 * metric_ct, 6))
+    plt.rc('xtick', labelsize=13)  # adjust x tick font size
+    plt.rc('ytick', labelsize=13)  # adjust y tick font size
+    fig, axes = plt.subplots(2, metric_ct, figsize=(4 * metric_ct, 6.5))
 
     # For each ROC stage (pre & post)
     for roc_stage_index, roc_stage_data in enumerate(metric_dict_master):
@@ -193,10 +183,8 @@ def plot_selected_metric_data(metric_dict_master, csv_file_name, metric_type_str
                     ax.plot([0, 1], [-0.05, -0.05], 'g')
                     ax.plot([0, 1], [-0.1, -0.1], 'yellowgreen')
                     # if roc_stage_index == 1:
-                    #     ax.plot([0, 1], [0.05, 0.05], 'g')
                     #     ax.plot([0, 1], [0, 0], 'b')
                     #     ax.plot([0, 1], [-0.05, -0.05], 'g')
-                    #     ax.plot([0, 1], [0.1, 0.1], 'yellowgreen')
                     # else:
                     #     ax.plot([0, 1], [-0.1, -0.1], 'yellowgreen')
 
@@ -206,31 +194,37 @@ def plot_selected_metric_data(metric_dict_master, csv_file_name, metric_type_str
             y_fit = poly_eq(x_values)
             ax.plot(x_values, y_fit, best_fit_line_color)  # Plot the line of best fit with a red dashed line
 
+            # Adjust tick sizes & formatting for readability
+            if metric_type_str == "Accuracy metrics":
+                ax.yaxis.set_major_locator(MaxNLocator(nbins=5))  # to avoid axis clutter
+
             # Set labeling
-            ax.set_xlabel(x_label)
-            ax.set_ylabel(metric_name)
+            ax.set_xticks(np.arange(0.0, 1.01, 0.2))
+            ax.set_xlabel(x_label, fontsize=13)
+            if generate_metric_graph_y_label:
+                ax.set_ylabel(metric_name, fontsize=13)
             if generate_metric_graph_titles:
-                ax.set_title(f'{roc_label} - {metric_name}')
+                ax.set_title(f'{roc_label} - {metric_name}', fontsize=14)
 
     # Customization for graph title
     if generate_metric_graph_super_title:
         plt.suptitle(
-            f"Analysis for {metric_type_str} metrics across DIR repair levels for '{selected_protected_attr}' "
+            f"Analysis for {metric_file_name_str} metrics across DIR repair levels for '{selected_protected_attr}' "
             f"attribute")
     plt.tight_layout()
 
-    plt.savefig(f"generated-pics/{csv_file_name}_{metric_type_str}-data-graphs.png")
+    plt.savefig(f"generated-pics/{file_name}_{metric_file_name_str}-data-graphs.png")
     if show_new_graphs:
         plt.show()
 
 
-def plot_metric_dict_data(metric_dict_master, csv_file_name, selected_fairness_metric_names, selected_accuracy_metric_names,
+def plot_metric_dict_data(metric_dict_master, file_name, selected_fairness_metric_names, selected_accuracy_metric_names,
                           plot_fairness=True, plot_accuracy=True):
     """
     Plots metric data in selection arrays and saves to a PNG file with specified file name.
 
     :param metric_dict_master: master dict containing all metric data
-    :param csv_file_name: name of original CSV data file
+    :param file_name: name for graph file
     :param selected_fairness_metric_names: list of fairness metric names to plot
     :param selected_accuracy_metric_names: list of accuracy metric names to plot
     :param plot_fairness: boolean flag to plot fairness metrics
@@ -240,13 +234,13 @@ def plot_metric_dict_data(metric_dict_master, csv_file_name, selected_fairness_m
     # Fairness metric plotting
     if plot_fairness:
         print("Plotting fairness metric data")
-        plot_selected_metric_data(metric_dict_master, csv_file_name, "Fairness metrics",
+        plot_selected_metric_data(metric_dict_master, file_name, "Fairness metrics",
                                   selected_fairness_metric_names)
 
     # Accuracy metric plotting
     if plot_accuracy:
         print("Plotting accuracy metric data")
-        plot_selected_metric_data(metric_dict_master, csv_file_name, "Accuracy metrics",
+        plot_selected_metric_data(metric_dict_master, file_name, "Accuracy metrics",
                                   selected_accuracy_metric_names)
 
     print("Data plotted & graphs saved successfully\n")
@@ -327,12 +321,12 @@ def get_overall_best_point(best_points):
     return best_stage
 
 
-def plot_pareto_front_pair(data, pareto_points, csv_file_name):
+def plot_pareto_front_pair(data, pareto_points, file_name):
     """
     Plots all points for trade-off between 2 metrics, with 2 Pareto fronts for pre- & post-ROC respectively.
     :param data: all data points for both pre- & post-ROC stages
     :param pareto_points: only the Pareto-front points of pre- & post-ROC stages
-    :param csv_file_name: name of original CSV data file
+    :param file_name: name of output file
     """
     fig, axes = plt.subplots(1, 2, figsize=(8, 4))
 
@@ -400,11 +394,11 @@ def plot_pareto_front_pair(data, pareto_points, csv_file_name):
 
         # Adjust titles and labels
         # ax.set_title(f'{roc_label}:\n{pareto_fairness_metric} vs. {pareto_accuracy_metric}\n')
-        ax.set_title(f'{roc_label}\n')
-        ax.set_xlabel(pareto_fairness_metric, wrap=True)
+        ax.set_title(f'{roc_label}\n', fontsize=14)
+        ax.set_xlabel(pareto_fairness_metric, wrap=True, fontsize=12)
         ax.xaxis.set_major_locator(MaxNLocator(nbins=5))  # to avoid axis clutter
         ax.yaxis.set_major_locator(MaxNLocator(nbins=5))  # to avoid axis clutter
-        ax.set_ylabel(pareto_accuracy_metric)
+        ax.set_ylabel(pareto_accuracy_metric, fontsize=12)
         ax.grid(True)
 
         # Save legend data
@@ -412,7 +406,7 @@ def plot_pareto_front_pair(data, pareto_points, csv_file_name):
             handles, labels = ax.get_legend_handles_labels()
 
     # Set up legend
-    fig.legend(handles, labels, loc='lower center', ncol=2)
+    fig.legend(handles, labels, loc='lower center')
 
     # Adjust protected attribute label if necessary
     if selected_protected_attr == "sex":
@@ -433,7 +427,7 @@ def plot_pareto_front_pair(data, pareto_points, csv_file_name):
         fig.suptitle(f"{pareto_fairness_metric} vs. {pareto_accuracy_metric} - Fairness weight = {lambda_weight}"
                      f"\nBest point in {best_point_stage} stage")
     fig.tight_layout()
-    fig.savefig(f'generated-pics/{csv_file_name}_pareto-front_'
+    fig.savefig(f'generated-pics/{file_name}_pareto-front_'
                 f'{pareto_fairness_metric_abbrev}_{pareto_accuracy_metric_abbrev}_fair-wt={lambda_weight}.png', dpi=300)
     if show_new_graphs:
         plt.show()
