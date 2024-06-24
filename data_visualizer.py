@@ -21,14 +21,14 @@ show_new_graphs = True
 # **** FOR METRIC GRAPHS ONLY ****
 
 # WHETHER TO GENERATE METRIC GRAPHS
-generate_metric_graphs = False
+generate_metric_graphs = True
 
 # WHETHER TO GENERATE TITLE
 generate_metric_graph_titles = True
 generate_metric_graph_super_title = True
 
 # WHETHER TO DISPLAY Y-AXIS LABEL
-generate_metric_graph_y_label = False
+generate_metric_graph_y_label = True
 
 # FAIRNESS METRICS TO SHOW:
 selected_fair_metric_names = ["Statistical parity difference", "Disparate impact", "Average odds difference",
@@ -43,7 +43,7 @@ selected_acc_metric_names = ["True positive rate", "False positive rate", "True 
 generate_pareto_fronts = True
 
 # WHETHER TO MENTION PROTECTED ATTRIBUTE IN TITLE
-protected_attr_in_title = False
+protected_attr_in_title = True
 
 # FAIRNESS METRIC (0 to 5):
 fairness_metric_index = 0

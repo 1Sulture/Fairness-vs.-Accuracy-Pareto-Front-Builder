@@ -58,53 +58,60 @@ def plot_general_graph_func(dataset):
     race_acceptance_percent = race_acceptance.div(race_acceptance.sum(axis=1), axis=0) * 100
 
     # Plotting
+    plt.rc('xtick', labelsize=13)
+    plt.rc('ytick', labelsize=13)
     fig, axes = plt.subplots(2, 2, figsize=(7, 5))
+
 
     # Gender Proportions
     axes[0, 0].bar(gender_counts.index, gender_counts.values, color=['blue', 'pink'])
-    axes[0, 0].set_title('Gender Proportions')
-    axes[0, 0].set_ylabel('Percentage')
+    axes[0, 0].set_title('Gender Proportions', fontsize=14)
+    axes[0, 0].set_ylabel('Percentage', fontsize=12)
     axes[0, 0].set_ylim([0, 80])
     for i, v in enumerate(gender_counts.values):
-        axes[0, 0].text(i, v + 1, f"{v:.1f}%", ha='center', va='bottom')
+        axes[0, 0].text(i, v + 1, f"{v:.1f}%", ha='center', va='bottom', fontsize=12, fontweight='bold')
 
     # Gender acceptance/rejection with percentages
     gender_acceptance.plot(kind='bar', stacked=True, color=['lightgreen', 'salmon'], ax=axes[0, 1])
-    axes[0, 1].set_title('Gender Acceptance Rates')
-    axes[0, 1].set_ylabel('Count')
+    axes[0, 1].set_title('Gender Acceptance Rates', fontsize=14)
+    axes[0, 1].set_ylabel('Count', fontsize=12)
     axes[0, 1].set_xticklabels(gender_acceptance.index, rotation=0)  # set x-axis labels
-    axes[0, 1].legend(fontsize="medium")
+    axes[0, 1].legend(fontsize=11)
 
     # Annotate with percentages
     for i, gender in enumerate(gender_acceptance.index):
         if 'Accepted' in gender_acceptance.columns:  # Check if the 'Accepted' category exists
-            count_accepted = gender_acceptance.loc[gender, 'Accepted']
+            count_accepted = gender_acceptance.loc[gender, 'Rejected']
             percent_accepted = gender_acceptance_percent.loc[gender, 'Accepted']
             # Position the annotation at the top of the 'Accepted' bar
-            axes[0, 1].text(i, count_accepted, f"{percent_accepted:.1f}%", ha='center', va='bottom', fontweight='bold')
+            axes[0, 1].text(i, count_accepted, f"{percent_accepted:.1f}%", ha='center', va='top', fontweight='bold',
+                            fontsize=12,
+                            bbox=dict(boxstyle="round,pad=0.2", facecolor='white', edgecolor='none', alpha=0.6))
 
     # Race Proportions
     axes[1, 0].bar(race_counts.index, race_counts.values, color=['blue', 'orange'])
-    axes[1, 0].set_title('Race Proportions')
-    axes[1, 0].set_ylabel('Percentage')
+    axes[1, 0].set_title('Race Proportions', fontsize=14)
+    axes[1, 0].set_ylabel('Percentage', fontsize=12)
     axes[1, 0].set_ylim([0, 90])
     for i, v in enumerate(race_counts.values):
-        axes[1, 0].text(i, v + 1, f"{v:.1f}%", ha='center', va='bottom')
+        axes[1, 0].text(i, v + 1, f"{v:.1f}%", ha='center', va='bottom', fontsize=12, fontweight='bold')
 
     # Race acceptance/rejection with percentages
     race_acceptance.plot(kind='bar', stacked=True, color=['lightgreen', 'salmon'], ax=axes[1, 1])
-    axes[1, 1].set_title('Race Acceptance Rates')
-    axes[1, 1].set_ylabel('Count')
+    axes[1, 1].set_title('Race Acceptance Rates', fontsize=14)
+    axes[1, 1].set_ylabel('Count', fontsize=12)
     axes[1, 1].set_xticklabels(race_acceptance.index, rotation=0)  # set x-axis labels
-    axes[1, 1].legend(fontsize="medium")
+    axes[1, 1].legend(fontsize=11)
 
     # Annotate with percentages
     for i, race in enumerate(race_acceptance.index):
         if 'Accepted' in race_acceptance.columns:
-            count_accepted = race_acceptance.loc[race, 'Accepted']
+            count_accepted = race_acceptance.loc[race, 'Rejected']
             percent_accepted = race_acceptance_percent.loc[race, 'Accepted']
             # Position the annotation at the top of the 'Accepted' bar
-            axes[1, 1].text(i, count_accepted, f"{percent_accepted:.1f}%", ha='center', va='bottom', fontweight='bold')
+            axes[1, 1].text(i, count_accepted, f"{percent_accepted:.1f}%", ha='center', va='top', fontweight='bold',
+                            fontsize=12,
+                            bbox=dict(boxstyle="round,pad=0.2", facecolor='white', edgecolor='none', alpha=0.6))
 
     plt.tight_layout()
     plt.savefig('generated-pics/adult_stats_general.png')
@@ -130,31 +137,34 @@ def plot_bigger_race_graph_func(dataset):
     race_acceptance_percent = race_acceptance.div(race_acceptance.sum(axis=1), axis=0) * 100
 
     # Plotting
-    fig, axes = plt.subplots(1, 2, figsize=(8, 3.5))
+    fig, axes = plt.subplots(1, 2, figsize=(8, 3.7))
 
     # Race proportions
     axes[0].bar(race_counts.index, race_counts.values, color=['blue', 'orange', 'green', 'red', 'purple'])
-    axes[0].set_title('Race Proportions')
-    axes[0].set_ylabel('Percentage')
+    axes[0].set_title('Race Proportions', fontsize=15)
+    axes[0].set_ylabel('Percentage', fontsize=12)
     axes[0].set_ylim([0, max(race_counts.values) + 10])  # Adjust y-limit to fit all text labels
-    axes[0].tick_params(axis='x', labelrotation=45, labelsize='small')
+    axes[0].tick_params(axis='x', labelrotation=45, labelsize=10)
+    axes[0].tick_params(axis='y', labelsize=12)
     for i, v in enumerate(race_counts.values):
-        axes[0].text(i, v + 1, f"{v:.1f}%", ha='center', va='bottom')
+        axes[0].text(i, v + 1, f"{v:.1f}%", ha='center', va='bottom', fontweight='bold', fontsize=12)
 
     # Race acceptance/rejection with percentages
     race_acceptance.plot(kind='bar', stacked=True, color=['lightgreen', 'salmon'], ax=axes[1])
-    axes[1].set_title('Race Acceptance Rates')
-    axes[1].set_ylabel('Count')
-    axes[1].set_xticklabels(race_order_full, rotation=45)
-    axes[1].tick_params(axis='x', labelsize='small')
-    axes[1].legend(fontsize="medium")
+    axes[1].set_title('Race Acceptance Rates', fontsize=15)
+    axes[1].set_ylabel('Count', fontsize=12)
+    axes[1].tick_params(axis='x', labelrotation=45, labelsize=10)
+    axes[1].tick_params(axis='y', labelsize=12)
+    axes[1].legend(fontsize=13)
 
     # Annotate with acceptance percentages only
     for i, race in enumerate(race_order_full):
         if 'Accepted' in race_acceptance.columns:
-            count_accepted = race_acceptance.loc[race, 'Accepted']
+            count_accepted = race_acceptance.loc[race, 'Rejected']
             percent_accepted = race_acceptance_percent.loc[race, 'Accepted']
-            axes[1].text(i, count_accepted, f"{percent_accepted:.1f}%", ha='center', va='bottom', fontweight='bold')
+            axes[1].text(i, count_accepted, f"{percent_accepted:.1f}%",
+                         ha='center', va='bottom', fontweight='bold', fontsize=12,
+                         bbox=dict(boxstyle="round,pad=0.2", facecolor='white', edgecolor='none', alpha=0.6))
 
     plt.tight_layout()
     plt.savefig('generated-pics/adult_stats_races.png')

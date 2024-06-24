@@ -17,13 +17,13 @@ from aif360.metrics import BinaryLabelDatasetMetric, ClassificationMetric
 dataset_file_name = "adult.data_cleaned"
 
 # WHETHER TO SHOW GRAPHS UPON COMPLETION
-show_graphs = False
+show_all_graphs = True
 
 # WHETHER TO PRINT GRAPH TITLES
 print_titles = True
 
 # WHETHER TO PRINT GRAPH Y-AXIS LABELS
-print_y_labels = False
+print_y_labels = True
 
 # ************************************************ END CUSTOMIZATION ************************************************
 
@@ -370,7 +370,7 @@ def generate_graphs_and_txt(protected_attribute, filename, fairness_graph_data_p
     plt.suptitle(f"Protected attribute: {protected_attribute}")
     plt.tight_layout()
     plt.savefig(f"generated-pics/{filename}.png")
-    if show_graphs:
+    if show_all_graphs:
         plt.show()
 
     print("Graphs generated successfully")
